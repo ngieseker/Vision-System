@@ -106,6 +106,7 @@ solution "Demo"
 		files { "src/tools/calibrate/extrinsic.cpp" }
 		links { "m", "dc1394" }
 		links { "apriltags", "cvsba" }
+    links { "pthread" }
         buildoptions { "-std=gnu++11" }
 	
     project "testing"

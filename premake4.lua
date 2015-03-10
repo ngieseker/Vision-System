@@ -193,11 +193,11 @@ solution "Demo"
 		links { "rt", "dc1394" }
 		links { "camera", "fxbcam", "jpeg" }
 
-	project "benchmark_vision"
-		kind "ConsoleApp"
-		files { "src/tools/benchmark_vision.cpp" }
-		links { "rt", "dc1394", "protobuf" }
-		links { "camera", "fxbcam", "Configuration", "ClusterComms", "common", "jpeg", "m" }
+--	project "benchmark_vision"
+--		kind "ConsoleApp"
+--		files { "src/tools/benchmark_vision.cpp" }
+--		links { "rt", "dc1394", "protobuf" }
+--		links { "camera", "fxbcam", "Configuration", "ClusterComms", "common", "jpeg", "m" }
 
 	project "serialtest"
 		kind "ConsoleApp"

@@ -1,0 +1,36 @@
+package ClusterProto;
+
+message Client_Init {
+	required sfixed64 cam_guid = 1;
+}
+
+message Vision_Data {
+	required uint64   id        = 1;
+	required sfixed64 time_sec  = 2;
+	required sfixed64 time_nsec = 3;
+
+	message Ray {
+		required double x   = 1;
+		required double y   = 2;
+		required double z   = 3;
+
+		required uint64 marker = 4;
+	}
+
+	repeated Ray ray = 4;
+
+	optional double bench_color_conversion  = 5;
+	optional double bench_thresholding      = 6;
+	optional double bench_blob_detection    = 7;
+	optional double bench_marker_ident      = 8;
+	optional double bench_findmarkers_total = 9;
+	optional double bench_client_overhead   = 10;
+}
+
+message Image {
+	required uint64   id        = 1;
+	required sfixed64 time_sec  = 2;
+	required sfixed64 time_nsec = 3;
+
+	required bytes image = 4;
+}

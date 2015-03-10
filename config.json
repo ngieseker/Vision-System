@@ -1,0 +1,74 @@
+{
+	"cameras" : [
+		{
+			"id" : 2,
+			"guid" : 2049567028596406,
+			"calib" : "calibration/cam2/camModel.yaml"
+		},
+		{
+			"id" : 3,
+			"guid" : 2049567032696379,
+			"calib" : "calibration/cam3/camModel.yaml"
+		},
+		{
+			"id" : 4,
+			"guid" : 2049567032696380,
+			"calib" : "calibration/cam4/camModel.yaml"
+		},
+		{
+			"id" : 5,
+			"guid" : 2049567032696381,
+			"calib" : "calibration/cam5/camModel.yaml"
+		},
+		{
+			"id" : -1,
+			"guid" : 2049567032696383,
+			"calib" : "calibration/cam-1/camModel.yaml"
+		}
+	],
+	"clients" : [
+		{
+			"ip" : "127.0.0.1",
+			"name" : "testing"
+		},
+		{
+			"ip" : "10.42.0.35",
+			"name" : "testing"
+		},
+		{
+			"ip" : "192.168.1.151",
+			"name" : "serenity"
+		},
+		{
+			"ip" : "192.168.1.152",
+			"name" : "zoe"
+		},
+		{
+			"ip" : "192.168.1.153",
+			"name" : "kaylee"
+		},
+		{
+			"ip" : "192.168.1.154",
+			"name" : "river"
+		},
+		{
+			"ip" : "192.168.1.155",
+			"name" : "mal"
+		},
+		{
+			"ip" : "192.168.1.156",
+			"name" : "inara"
+		},
+		{
+			"ip" : "192.168.1.157",
+			"name" : "jayne"
+		},
+		{
+			"ip" : "192.168.1.158",
+			"name" : "simon"
+		}
+	],
+	"vision_port" : 12345,
+	"data_port" : 12346
+}
+

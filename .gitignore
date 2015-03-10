@@ -1,0 +1,13 @@
+Build/*
+system/Build/*
+*.o
+*.tif
+*.png
+*.jpg
+
+*.make
+bin/
+build/
+include/pb
+
+*.pyc

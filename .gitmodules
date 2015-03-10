@@ -1,0 +1,3 @@
+[submodule "modules/cam1394"]
+	path = modules/cam1394
+	url = git@github.com:UMichAeroHelicopter/cam1394.git

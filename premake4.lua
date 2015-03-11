@@ -107,15 +107,15 @@ solution "Demo"
 		links { "m", "dc1394" }
 		links { "apriltags", "cvsba" }
     links { "pthread" }
-        buildoptions { "-std=gnu++11" }
+        buildoptions { "-std=c++0x" }
 	
     project "testing"
 		kind "ConsoleApp"
 		files { "src/tools/testing.cpp" }
 		links { "rt", "dc1394" }
 		links { "camera"}
-        buildoptions { "-std=c++11" }
--- 
+        buildoptions { "-std=c++0x" }
+
 -- Core components
 -- 
 	project "ClusterServer"

@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cstring>
 #include <ctime>
+#include <cassert>
 #include "camera.h"
 
 using namespace cam1394;
@@ -18,13 +19,13 @@ int main(int argc, char *argv[])
 
 	/* set up camera settings */	
 	camera a;
-	if (a.open("NONE", "1024x768_MONO8", 30, "HQLINEAR", "GRBG") < 0)
+	if (a.open("0007481202ED5E3B", "1024x768_MONO8", 30, "HQLINEAR", "GRBG") < 0)
 		return 0;
 
-	a.setTrigger(1);
+	a.setTrigger(0);
 	a.setBrightness(0);
-	a.setGain(0);
-	a.setExposure(0);
+	a.setGain(-1);
+	a.setExposure(1000);
 	a.setShutter(600);
 	a.setWhiteBalance(75, 32);
 
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
 		if (key == 'w')
 		{
 			sprintf(fn, "%s/%s%i.tif", argv[1], argv[2], count);
-			imwrite(fn, aimage);
+			assert(imwrite(fn, aimage));
 			std::cout << count << std::endl;
 			count++;
 		}

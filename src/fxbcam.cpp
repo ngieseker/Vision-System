@@ -448,7 +448,7 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	std::sort(marker_red.begin(), marker_red.end());
 	
 
-#ifdef DEBUG
+#ifdef DEBUG/*
     printf("red: ");	   
 	for (size_t i = 0; i < marker_red.size();i++)
 		printf("%10.6lf ", marker_red[i].area);
@@ -468,7 +468,7 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 				break;
 		}
 		printf("range: %zu\n", j-i);
-	}
+	}*/
 #endif
 
 
@@ -485,6 +485,8 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 			break;
 		n++;
 	}
+
+
 
 	for (std::vector<Blob>::iterator m = marker_red.begin(); m != marker_red.end(); ++m) {
 		markers.push_back(Marker(m->x, m->y, 2));
@@ -688,6 +690,155 @@ Vec3 FXBcam::intersectRays(std::vector<Ray> &rays) {
 	return Vec3(x.at<double>(0,0), x.at<double>(1,0), x.at<double>(2,0));
 }
 
+std::vector<Objects> getObjects(std::vector<Marker> markers)
+{
+	std::vector<Objects> objs (0);
+	Marker P1,P2,P3,P4;
+	int i, j, k;
+
+	if (markers.size() % 4 != 0) { return -1; } // Assume four markers per object
+
+	for (objs.size() < markers.size() % 4)
+	{
+		std::sort(markers.begin(),markers.end(),sortByAscendingX);
+		P1 = markers[0];
+
+		for (i = 1; i < markers.size(); i++)
+		{
+			P2 = markers[i];
+			if (inDistanceThreshold(P1,P2))
+			{
+				for (j = i; j < markers.size(); j++);
+				{
+					P3 = markers[j]
+					if (inDistanceThreshold(P2,P3))
+					{
+						// After first three markers are tracked, the fourth will be in the -x direction from marker 3
+						for (k = j; k >0; k--)
+						{
+							P4 = markers[k];
+							if (inDistanceThreshold(P3,P4) & inDistanceThreshold(P4,P1))
+							{
+								Object obj(P1,P2,P3,P4)
+
+								// Remove points objects have already been identified
+								markers.erase(markers.begin);
+								markers.erase(markers.begin + i);
+								markers.erase(markers.begin + j);
+								markers.erase(markers.begin + k);
+							}
+						}
+					}
+				} 
+			}
+		}
+	}
+}
+
+bool inDistanceThreshold(Marker A, Marker B)
+{
+	// TODO: Move these constants into constants header file?
+	double dist_max = 2;
+	double dist_min = 1;
+	double distance = ((pow(A.x - B.x,2)+pow(A.y - B.y,2))); // SQRT is too time intensive
+
+	if (distance > dist_min and distance < dist_max) {return true;}
+	else {return false;}
+}
+
+/*
+void getRelatedMarkers(std::vector<Marker> markers, std::vector<Marker> &tempmarkers, size_t &index)
+{
+	std::vector<Marker> rotatemarkers (markers.size());
+
+	// Compares each consequent value to find all markers close together, beginning at index
+	for (size_t i = 1; i < markers.size(); i++)
+	{
+		std::copy(markers.begin(), markers.end(), markers.begin());
+		std::rotate(rotatemarkers.begin(), markers.begin() + i, markers.end());
+
+		// Assumes all markers already contain an r vector from the origin to the marker
+		if (abs(markers[index].r - rotatemarkers[index].r) < r_max)
+			tempmarkers.push_back(markers[i]);
+		else
+			break;
+
+		rotatemarkers.clear();
+	}
+
+	
+	if (tempmarkers.size() % 4 == 0) // If there are multiple distinct objects
+	{
+		if (tempmarkers.size() > 4) // If there is a large blob of objects close together
+			{
+				
+				sort_Markers_by_Angle(&tempmarkers);
+				
+				// If objects cannot be differentiated by location in the theta direction
+				if (tempmarkers[tempmarkers.size(tempmarkers)] - tempmarkers[0] < M_PI/6)
+				{
+					for (size_t k = 0; k < tempmarkers.size(); k++) // Compute blob centroid
+					{
+						centroid.x += tempmarkers[k].x;
+						centroid.y += tempmarkers[k].y;
+					}
+					
+					centroid.x /= tempmarkers.size();
+					centroid.y /= tempmarkers.size();
+
+					for (size_t k = 0; k < tempmarkers.size(); k++) // Find the most extreme markers
+						tempmarkers[k].r = sqrt(pow(markers[i].x - centroid.x, 2) + pow(markers[i].y - centroid.y, 2));
+				
+				}
+
+				else
+				{
+					// Sort by distance from marker with lowest theta
+					for (size_t m = 0; m < tempmarkers.size(); m++)
+						tempmarkers[m].r = sqrt(pow(tempmarkers[k].y - tempmarkers[m].y,2) + pow(tempmarkers[k].x - tempmarkers[m].x,2);
+
+					std::sort(tempmarkers.begin(),tempmarkers.end(),sortByRadius);
+					tempmarkers.erase(tempmarkers.begin() + 3, tempmarkers.end()); // Isolate object
+				}
+				
+
+
+	else
+	{
+		std::cout<<"Error detecting multiple objects"<<endl;
+	}
+
+	index = i;
+
+
+
+	return;
+}
+
+void sort_Markers_by_Angle(std::vector &markers)
+{
+	//std::vector<Marker> origin_markers;
+
+	// Compute the marker angle with respect to the origin
+	for (size_t i = 0; i < markers.size(); i++)
+	{
+		double angle = atan2(markers[i].y,markers[i].x);
+
+		if (angle < 0)
+			angle += 2*M_PI;
+
+// TODO: solve potential problem when marker is on top of origin?
+//		// If marker is on top of the origin
+//		if (markers[i].x < dist_threshold or markers[i].y < dist_threshold)
+//			origin_markers.push_back(markers[i]);
+//
+		markers[i].angle = angle;
+	}
+
+	std::sort(markers.begin(), markers.end(), sortByAngle)
+
+}
+*/
 
 Scalar FXBcam::getMarkerMin(size_t num)
 {

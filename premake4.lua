@@ -141,6 +141,12 @@ solution "Demo"
 		targetdir "build"
 		files { "fxbcam.h", "src/fxbcam.cpp" }
 
+	project "object"
+		kind "StaticLib"
+		--location "src"
+		targetdir "build"
+		files { "object.h", "src/object.cpp" }
+
 	project "Configuration"
 		kind "StaticLib"
 		--location "src"

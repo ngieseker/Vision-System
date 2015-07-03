@@ -4,6 +4,7 @@
 #include "camera.h"
 #include "hash.h"
 #include "cv.h"
+#include "object.h"
 
 #include <fstream>
 #include <vector>
@@ -25,7 +26,7 @@ struct Blob
 		return area > rhs.area;
 	}
 };
-
+/*
 struct Marker {
 	double x;
 	double y;
@@ -43,7 +44,7 @@ struct Marker {
 		return theta < rhs.theta;
 	}
 };
-
+*/
 struct Ray {
 	/* Direction */
 	double a;

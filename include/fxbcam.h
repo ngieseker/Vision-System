@@ -29,6 +29,7 @@ struct Blob
 struct Marker {
 	double x;
 	double y;
+	double angle;
 
 	double r;
 	double theta;
@@ -39,8 +40,14 @@ struct Marker {
 	Marker(int x, int y, int color) : 
 		x(x), y(y), color(color) {}
 
-	bool operator<(const Marker &rhs) const {
+	bool sortByTheta(const Marker &rhs) const
+	{
 		return theta < rhs.theta;
+	}
+
+	bool sortByAngle(const Marker &rhs) const
+	{
+		return angle < rhs.angle;
 	}
 };
 

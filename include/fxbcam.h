@@ -40,16 +40,6 @@ struct Marker {
 
 	Marker(int x, int y, int color) : 
 		x(x), y(y), color(color) {}
-
-	bool sortByTheta(const Marker &rhs) const
-	{
-		return theta < rhs.theta;
-	}
-
-	bool sortByAngle(const Marker &rhs) const
-	{
-		return angle < rhs.angle;
-	}
 };
 */
 struct Ray {

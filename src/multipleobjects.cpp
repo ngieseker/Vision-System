@@ -2,18 +2,20 @@
 	File containing all functions for multiple object tracking
 	3 July 2015
 */
+#include "func.h"
 	
-void getObjects(std::vector<Marker> &markers, std::vector<double> &objs, int &obj_id, int markernum)
+void getObjects(std::vector<Marker> &markers, std::vector<Marker> &objs, int &obj_id, unsigned markernum)
 {
-	int i, j, k, m;
-
+	int i, j, k;
+	int sz = markers.size();
+	
 	Marker P1 = markers[0];
-	for (i = 1; i < markers.size(); i++)
+	for (i = 1; i < sz; i++)
 	{
 		Marker P2 = markers[i];
 		if (inDistanceThreshold(P1,P2))
 		{
-			for (j = i; j < markers.size(); j++)
+			for (j = i; j < sz; j++)
 			{
 				Marker P3 = markers[j];
 				if (inDistanceThreshold(P2,P3))
@@ -64,9 +66,12 @@ bool sortByX(const Marker &lhs, const Marker &rhs)
 bool inDistanceThreshold(Marker A, Marker B)
 {
 	// TODO: Move these constants into constants header file?
+  // possibly make this into a functor to store/update cosntants
 	double dist_max = 2;
 	double dist_min = 1;
-	double distance = ((pow(A.x - B. x,2)+pow(A.y - B.y,2))); // SQRT is too time intensive
+	double x = A.x - B. x;
+	double y = A.y - B.y;
+	double distance = (x*x + y*y); // SQRT is too time intensive
 
 	if (distance > dist_min and distance < dist_max) {return true;}
 	else {return false;}

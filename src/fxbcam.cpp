@@ -532,108 +532,121 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 			}
 		}
 
-		#ifdef DEBUG
+#ifdef DEBUG
+		Point2d centroid = Point2d(0.0, 0.0);
+		
 		for (std::vector<Marker>::iterator m = objs.begin; m != objects.end; m++)
-			circle(img, Point(m->centroid.x, m->centroid.y), 1);
-		#endif
+		  circle(img, Point(m->centroid.x, m->centroid.y), 1);
+#endif
 	}
 
 #else // Only a single object is being tracked
-	#ifdef DEBUG
-		circle(img, centroid, 3, Scalar(255, 255, 255), -1);
-	#endif
-
-
-		/* Convert marker positions to polar coordinates */
-		for (size_t i = 0; i < markers.size(); i++)
-		{
-			Scalar color;
-			if (markers[i].color == 0) // Blue
-				color = Scalar(255, 0, 0);
-			else if (markers[i].color == 1) // Green
-				color = Scalar(0, 255, 0);
-			else if (markers[i].color == 2) // Red
-				color = Scalar(0, 0, 255);
-
-			markers[i].r = sqrt(pow(markers[i].x - centroid.x, 2) + pow(markers[i].y - centroid.y, 2));
-
-			double angle = atan2(markers[i].y - centroid.y, markers[i].x - centroid.x);
-			if (angle < 0)
-				angle += 2*M_PI;
-			markers[i].theta = angle;
-
-	#ifdef DEBUG
-			ellipse(img,
-					centroid,
-					Size2f(markers[i].r, markers[i].r),
-					0.0,
-					0.0,
-					180.0/M_PI * markers[i].theta,
-					color);
-	#endif
-		}
-
-		/* Sort markers by increasing theta */
-		std::sort(markers.begin(), markers.end());
-
-		/* Look for patterns going clockwise through markers */
-		LED led_pattern[8] = {{0,2}, {1,0}, {2,0}, {3,0},  {0,2}, {1,0}, {2,0}, {3,0}};
-		size_t pattern_idx;
-		size_t markers_idx;
-
-		/* Start from the marker after the largest angle gap */
-		double largest_gap = 0; // Biggest possible gap is 2*pi
-		for (size_t i = 0; i < markers.size(); i++)
-		{
-			size_t n = (i+1) % markers.size();
-			double diff;
-			if (n > i)
-				diff = markers[n].theta - markers[i].theta;
-			else
-				diff = markers[n].theta - markers[i].theta + 2*M_PI;
-
-			if (diff > largest_gap)
-			{
-				markers_idx = n;
-				largest_gap = diff;
-			}
-		}
-
-		/* Put the starting marker at position 0 */
-		std::rotate(markers.begin(), markers.begin() + markers_idx, markers.end());
-
-		/* Match visible marker pattern to the reference */
-		for (pattern_idx = 0; pattern_idx < 4; pattern_idx++)
-		{
-			size_t matched = 0;
-			for (size_t m = 0; m < markers.size(); m++)
-			{
-				if (markers[m].color != led_pattern[pattern_idx + m].color)
-					break;
-				markers[m].id = led_pattern[pattern_idx + m].id;
-				matched++;
-			}
-			if (matched == markers.size())
-				break;
-		}
-
-
-		/* Reorder markers by theta */
-		//std::sort(markers.begin(), markers.end());
-
-		/*
-		for (size_t i = 0; i < markers.size(); i++)
-			std::cout << markers[i].id << " ";
-		std::cout << std::endl;
-		*/
+	/* Find the centroid */
+		
+	if (markers.size() > 2) {
+	  Point2d centroid = Point2d(0.0, 0.0);
+	  for (size_t i = 0; i < markers.size(); i++) {
+	    centroid.x += markers[i].x;
+	    centroid.y += markers[i].y;
+	  }
+	  centroid.x /= markers.size();
+	  centroid.y /= markers.size();
+	  
+#ifdef DEBUG
+	  circle(img, centroid, 3, Scalar(255, 255, 255), -1);
 #endif
-
+	  
+	  
+	  /* Convert marker positions to polar coordinates */
+	  for (size_t i = 0; i < markers.size(); i++)
+	    {
+	      Scalar color;
+	      if (markers[i].color == 0) // Blue
+		color = Scalar(255, 0, 0);
+	      else if (markers[i].color == 1) // Green
+		color = Scalar(0, 255, 0);
+	      else if (markers[i].color == 2) // Red
+		color = Scalar(0, 0, 255);
+	      
+	      markers[i].r = sqrt(pow(markers[i].x - centroid.x, 2) + pow(markers[i].y - centroid.y, 2));
+	      
+	      double angle = atan2(markers[i].y - centroid.y, markers[i].x - centroid.x);
+	      if (angle < 0)
+		angle += 2*M_PI;
+	      markers[i].theta = angle;
+	      
+#ifdef DEBUG
+	      ellipse(img,
+		      centroid,
+		      Size2f(markers[i].r, markers[i].r),
+		      0.0,
+		      0.0,
+		      180.0/M_PI * markers[i].theta,
+		      color);
+#endif
+	    }
+	  
+	  /* Sort markers by increasing theta */
+	  std::sort(markers.begin(), markers.end());
+	  
+	  /* Look for patterns going clockwise through markers */
+	  LED led_pattern[8] = {{0,2}, {1,0}, {2,0}, {3,0},  {0,2}, {1,0}, {2,0}, {3,0}};
+	  size_t pattern_idx;
+	  size_t markers_idx;
+	  
+	  /* Start from the marker after the largest angle gap */
+	  double largest_gap = 0; // Biggest possible gap is 2*pi
+	  for (size_t i = 0; i < markers.size(); i++)
+	    {
+	      size_t n = (i+1) % markers.size();
+	      double diff;
+	      if (n > i)
+		diff = markers[n].theta - markers[i].theta;
+	      else
+		diff = markers[n].theta - markers[i].theta + 2*M_PI;
+	      
+	      if (diff > largest_gap)
+		{
+		  markers_idx = n;
+		  largest_gap = diff;
+		}
+	    }
+	  
+	  /* Put the starting marker at position 0 */
+	  std::rotate(markers.begin(), markers.begin() + markers_idx, markers.end());
+	  
+	  /* Match visible marker pattern to the reference */
+	  for (pattern_idx = 0; pattern_idx < 4; pattern_idx++)
+	    {
+	      size_t matched = 0;
+	      for (size_t m = 0; m < markers.size(); m++)
+		{
+		  if (markers[m].color != led_pattern[pattern_idx + m].color)
+		    break;
+		  markers[m].id = led_pattern[pattern_idx + m].id;
+		  matched++;
+		}
+	      if (matched == markers.size())
+		break;
+	    }
+	  
+	  
+	  /* Reorder markers by theta */
+	  //std::sort(markers.begin(), markers.end());
+	  
+	  /*
+	    for (size_t i = 0; i < markers.size(); i++)
+	    std::cout << markers[i].id << " ";
+	    std::cout << std::endl;
+	  */
+#endif
+	  
 #ifdef BENCHMARK
-	bench_t.end();
-	bench.marker_ident = bench_t.elapsed();
+	  bench_t.end();
+	  bench.marker_ident = bench_t.elapsed();
 #endif
-
-		return markers.size();
+	  
+	  return markers.size();
 	}
 	else
 	{

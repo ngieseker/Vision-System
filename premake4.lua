@@ -139,7 +139,15 @@ solution "Demo"
 		kind "StaticLib"
 		--location "src"
 		targetdir "build"
-		files { "fxbcam.h", "src/fxbcam.cpp" }
+		links { "object", "multobj" }
+		files { "fxbcam.h", "src/fxbcam.cpp"}
+
+	project "multobj"
+		kind "StaticLib"
+		--location "src"
+		targetdir "build"
+		links { "object" }
+		files { "func.h", "src/multipleobjects.cpp" }
 
 	project "object"
 		kind "StaticLib"

@@ -71,4 +71,3 @@ int Object::get_ori() {
   // to ignore a negative degree
   return abs(degree) + q;
 }
-

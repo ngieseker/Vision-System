@@ -6,7 +6,7 @@ ifndef config
 endif
 export config
 
-PROJECTS := server client virtual_client markertrainer capture_cali capture intrinsic extrinsic testing ClusterServer ClusterComms DataManager fxbcam Configuration common network camera apriltags uart findblobs serialtest ping rays_test hash_test hashmap_test jpeg_test
+PROJECTS := server client virtual_client markertrainer capture_cali capture intrinsic extrinsic testing ClusterServer ClusterComms DataManager fxbcam multobj object Configuration common network camera apriltags uart findblobs serialtest ping rays_test hash_test hashmap_test jpeg_test
 
 .PHONY: all clean help $(PROJECTS)
 
@@ -48,8 +48,14 @@ ClusterComms:
 DataManager: 
 	@${MAKE} --no-print-directory -C . -f DataManager.make
 
-fxbcam: 
+fxbcam: object multobj
 	@${MAKE} --no-print-directory -C . -f fxbcam.make
+
+multobj: object
+	@${MAKE} --no-print-directory -C . -f multobj.make
+
+object: 
+	@${MAKE} --no-print-directory -C . -f object.make
 
 Configuration: 
 	@${MAKE} --no-print-directory -C . -f Configuration.make
@@ -104,6 +110,8 @@ clean:
 	@${MAKE} --no-print-directory -C . -f ClusterComms.make clean
 	@${MAKE} --no-print-directory -C . -f DataManager.make clean
 	@${MAKE} --no-print-directory -C . -f fxbcam.make clean
+	@${MAKE} --no-print-directory -C . -f multobj.make clean
+	@${MAKE} --no-print-directory -C . -f object.make clean
 	@${MAKE} --no-print-directory -C . -f Configuration.make clean
 	@${MAKE} --no-print-directory -C . -f common.make clean
 	@${MAKE} --no-print-directory -C . -f network.make clean
@@ -142,6 +150,8 @@ help:
 	@echo "   ClusterComms"
 	@echo "   DataManager"
 	@echo "   fxbcam"
+	@echo "   multobj"
+	@echo "   object"
 	@echo "   Configuration"
 	@echo "   common"
 	@echo "   network"

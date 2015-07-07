@@ -4,6 +4,9 @@
 #include <cmath>
 #include "fxbcam.h"
 #include "Timer.hpp"
+#include "globals.h"
+#include "func.h"
+#include "multipleobjects.cpp"
 
 #include <cmath>
 #include <algorithm>
@@ -399,9 +402,9 @@ int FXBcam::findBlobs(Mat img, int mnum,
 }
 
 #ifndef BENCHMARK
-int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers){
+int FXBcam::organizeMarkers(Mat img, std::vector<Marker> &markers){
 #else
-int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &bench) {
+int FXBcam::organizeMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &bench) {
 #endif
 
 #ifdef BENCHMARK
@@ -508,39 +511,29 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	}
 	*/
 
-#ifdef multipleobjects // Multiple objects are tracked
-	std::vector<double> objs (0);
+	#ifdef BENCHMARK
+	  bench_t.end();
+	  bench.marker_ident = bench_t.elapsed();
+	#endif
 
-	int markernum, obj_id = 1;
+	  return 0;
+}
 
-	if (markers.size() % 4 != 0) { std::cout<<"Error: total number of markers detected is "<<markers.size()<<std::endl; } // Assume four markers per object
-	else
-	{
-		markernum = markers.size() / 4;
-
-		std::sort(markers.begin(),markers.end()); // Sort by ascending x value
-
-		while (obj_id <= markernum)
-		{
-			getObjects(markers, objs, obj_id, markernum);
-
-			if (obj_id <= markernum)
-			{
-				std::sort(markers.begin(),markers.end()); // Sort by ascending x value
-				for (int i = 1; i < 4; i++)
-					markers.pop_back();
-			}
-		}
-
-#ifdef DEBUG
-		Point2d centroid = Point2d(0.0, 0.0);
-		
-		for (std::vector<Marker>::iterator m = objs.begin; m != objects.end; m++)
-		  circle(img, Point(m->centroid.x, m->centroid.y), 1);
+#ifndef BENCHMARK
+int FXBcam::findSingleMarker(std::vector<Marker> &markers) {
+#else
+int FXBcam::findSingleMarker(std::vector<Marker> &markers, bench_fxbcam &bench) {
 #endif
-	}
 
-#else // Only a single object is being tracked
+#ifdef BENCHMARK
+	Timer bench_t(CLOCK_THREAD_CPUTIME_ID);
+#endif
+
+
+#ifdef BENCHMARK
+	bench_t.start();
+#endif
+
 	/* Find the centroid */
 		
 	if (markers.size() > 2) {
@@ -572,7 +565,7 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	      
 	      double angle = atan2(markers[i].y - centroid.y, markers[i].x - centroid.x);
 	      if (angle < 0)
-		angle += 2*M_PI;
+			angle += 2*M_PI;
 	      markers[i].theta = angle;
 	      
 #ifdef DEBUG
@@ -601,15 +594,15 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	      size_t n = (i+1) % markers.size();
 	      double diff;
 	      if (n > i)
-		diff = markers[n].theta - markers[i].theta;
+			diff = markers[n].theta - markers[i].theta;
 	      else
-		diff = markers[n].theta - markers[i].theta + 2*M_PI;
+			diff = markers[n].theta - markers[i].theta + 2*M_PI;
 	      
 	      if (diff > largest_gap)
-		{
+			{
 		  markers_idx = n;
 		  largest_gap = diff;
-		}
+			}
 	    }
 	  
 	  /* Put the starting marker at position 0 */
@@ -620,12 +613,12 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	    {
 	      size_t matched = 0;
 	      for (size_t m = 0; m < markers.size(); m++)
-		{
-		  if (markers[m].color != led_pattern[pattern_idx + m].color)
-		    break;
-		  markers[m].id = led_pattern[pattern_idx + m].id;
-		  matched++;
-		}
+		  {
+			  if (markers[m].color != led_pattern[pattern_idx + m].color)
+			    break;
+			  markers[m].id = led_pattern[pattern_idx + m].id;
+			  matched++;
+		  }
 	      if (matched == markers.size())
 		break;
 	    }
@@ -639,7 +632,6 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	    std::cout << markers[i].id << " ";
 	    std::cout << std::endl;
 	  */
-#endif
 	  
 #ifdef BENCHMARK
 	  bench_t.end();
@@ -648,18 +640,66 @@ int FXBcam::findMarkers(Mat img, std::vector<Marker> &markers, bench_fxbcam &ben
 	  
 	  return markers.size();
 	}
-	else
-	{
-		// Identify what markers we can
-	}
 
-#ifdef BENCHMARK
+	#ifdef BENCHMARK
 	bench_t.end();
 	bench.marker_ident = bench_t.elapsed();
-#endif
+	#endif
+
 	return 0;
+
 }
 
+#ifndef BENCHMARK
+int FXBcam::findMultipleMarkers(std::vector<Marker> markers, std::vector<Object> &objs)
+#else
+int FXBcam::findMultipleMarkers(std::vector<Marker> markers, std::vector<Object> &objs, bench_fxbcam &bench)
+#endif
+{
+	#ifdef BENCHMARK
+	Timer bench_t(CLOCK_THREAD_CPUTIME_ID);
+	#endif
+
+	int markernum, obj_id = 1;
+
+	#ifdef BENCHMARK
+	bench_t.start();
+	#endif
+
+	if (markers.size() % 4 != 0) { std::cout<<"Error: total number of markers detected is "<<markers.size()<<std::endl; } // Assume four markers per object
+	else
+	{
+		markernum = markers.size() / 4;
+
+		std::sort(markers.begin(),markers.end()); // Sort by ascending x value
+
+		while (obj_id <= markernum)
+		{
+			getObjects(markers, objs, obj_id, markernum);
+
+			if (obj_id <= markernum)
+			{
+				std::sort(markers.begin(),markers.end()); // Sort by ascending x value
+				for (int i = 1; i < 4; i++)
+					markers.pop_back();
+			}
+		}
+
+#ifdef DEBUG
+		Point2d centroid = Point2d(0.0, 0.0);
+		
+		for (std::vector<Marker>::iterator m = objs.begin; m != objects.end; m++)
+		  circle(img, Point(m->centroid.x, m->centroid.y), 1);
+#endif
+	}
+
+	#ifdef BENCHMARK
+	bench_t.end();
+	bench.marker_ident = bench_t.elapsed();
+	#endif
+
+	return 0;
+}
 
 void FXBcam::castRays(std::vector<Marker> &markers, std::vector<Ray> &rays) {
 	Mat pos   = Mat(3, 1, CV_64FC1);

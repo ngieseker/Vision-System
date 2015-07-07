@@ -162,11 +162,20 @@ class FXBcam
 
 #ifndef BENCHMARK
 		int findBlobs(Mat, int, std::vector<Blob>&, double = -1, CvRect = cvRect(0,0,0,0));
-		int findMarkers(Mat, std::vector<Marker>&);
+		int organizeMarkers(Mat, std::vector<Marker>&);
+		int findSingleMarker(std::vector<Marker>&);
+		int findMultipleMarkers(std::vector<Marker>, std::vector<Object>&);
 #else
 		int findBlobs(Mat, int, std::vector<Blob>&, bench_fxbcam&, double = -1, CvRect = cvRect(0,0,0,0));
-		int findMarkers(Mat, std::vector<Marker>&, bench_fxbcam&);
+		int organizeMarkers(Mat, std::vector<Marker>&, bench_fxbcam&);
+		int findSingleMarker(std::vector<Marker>&, bench_fxbcam&);
+		int findMultipleMarkers(std::vector<Marker>, std::vector<Object>&, bench_fxbcam&);
+
 #endif
+
+		void getObjects(std::vector<Marker>, std::vector<Object>&, int&, unsigned);
+		bool sortByX(const Marker&, const Marker&);
+		bool inDistanceThreshold(Marker, Marker);
 
 		void castRays(std::vector<Marker>&, std::vector<Ray>&);
 		Vec3 intersectRays(std::vector<Ray>&);

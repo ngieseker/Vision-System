@@ -16,7 +16,7 @@
 
 using std::vector;
 /* Multiple object tracking */
-void getObjects(vector<Marker> &markers, vector<double> &objs, int &obj_id, int markernum);
+void getObjects(vector<Marker> &markers, vector<Object> &objs, int &obj_id, int markernum);
 bool sortByX(const Marker &lhs, const Marker &rhs);
 bool inDistanceThreshold(Marker A, Marker B);
 

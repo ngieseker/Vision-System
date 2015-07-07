@@ -13,7 +13,7 @@ using namespace std;
 
 
 
-
+#define multipleobjects
 #define PTGREY 45213
 #define IMAGINGSOURCE 1864
 void init_map(std::map<uint64_t, int>& m)
@@ -125,7 +125,15 @@ int main(int, char **)
 	  //cvtColor(aimage, hsv, CV_BGR2HSV);
 	  Timer t1;
 	  t1.start();
-	  vis.findMarkers(aimage, nothing);
+
+    vis.organizeMarkers(aimage, nothing);
+
+#ifdef multipleobjects
+    std::vector<Object> objects;
+    vis.findMultipleMarkers(nothing, objects);
+#else
+	  vis.findSingleMarker(nothing);
+#endif
 	  t1.end();
 #ifdef DEBUG	
 	  imshow("a", aimage);
@@ -153,10 +161,6 @@ int main(int, char **)
 
 	//if (a.open("NONE", "1024x768_MONO8", 30, "HQLINEAR", "GRBG") < 0)
 	//return 0;
-  return 0;
-  
-
-
 	
 	return 0;
 }

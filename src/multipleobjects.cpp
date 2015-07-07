@@ -3,8 +3,10 @@
 	3 July 2015
 */
 #include "func.h"
+#include "fxbcam.h"
+#include "globals.h"
 	
-void getObjects(std::vector<Marker> &markers, std::vector<Marker> &objs, int &obj_id, unsigned markernum)
+void FXBcam::getObjects(std::vector<Marker> markers, std::vector<Object> &objs, int &obj_id, unsigned markernum)
 {
 	int i, j, k;
 	int sz = markers.size();
@@ -28,13 +30,11 @@ void getObjects(std::vector<Marker> &markers, std::vector<Marker> &objs, int &ob
 						{
 							
 							#ifdef DEBUG
-							std::cout<<"For Object # "<<obj_id<<": marker 1: "<<P1.x<< " marker 2: "<<P2.x<< " marker 3: "<<P3.x<<" marker 4: "<<P4.x<<std::endl;
+							std::cout<<"For Object # "<<obj_id<<":"<<std::endl<<"marker 1: "<<P1.x<< " marker 2: "<<P2.x<< " marker 3: "<<P3.x<<" marker 4: "<<P4.x<<std::endl;
 							#endif
 
-							objs.push_back(P1);
-							objs.push_back(P2);
-							objs.push_back(P3);
-							objs.push_back(P4);
+							Object obj = Object(P1,P2,P3,P4,obj_id);
+							objs.push_back(obj);
 
 							// Skip objects that have already been identified in subsequent operations
 							markers[0].x = -1 * markers[0].x;
@@ -51,6 +51,7 @@ void getObjects(std::vector<Marker> &markers, std::vector<Marker> &objs, int &ob
 			} 
 		}
 	}
+
 	if (objs.size() < markernum)
 	{
 		std::cout<<"Error detecting multiple objects"<<std::endl;
@@ -58,17 +59,15 @@ void getObjects(std::vector<Marker> &markers, std::vector<Marker> &objs, int &ob
 	}
 }
 
-bool sortByX(const Marker &lhs, const Marker &rhs)
+bool FXBcam::sortByX(const Marker &lhs, const Marker &rhs)
 {
 		return lhs.x > rhs.x;
 }
 
-bool inDistanceThreshold(Marker A, Marker B)
+bool FXBcam::inDistanceThreshold(Marker A, Marker B)
 {
-	// TODO: Move these constants into constants header file?
   // possibly make this into a functor to store/update cosntants
-	double dist_max = 2;
-	double dist_min = 1;
+
 	double x = A.x - B. x;
 	double y = A.y - B.y;
 	double distance = (x*x + y*y); // SQRT is too time intensive

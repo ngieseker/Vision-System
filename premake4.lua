@@ -201,6 +201,12 @@ solution "Demo"
 -- 
 -- Test programs
 -- 
+	project "getpos"
+		kind "ConsoleApp"
+		files { "src/tools/getpos.cpp" }
+		links { "rt", "dc1394" }
+		links { "camera", "fxbcam", "jpeg", "object" }
+
 	project "findblobs"
 		kind "ConsoleApp"
 		files { "src/tools/findblobs.cpp" }

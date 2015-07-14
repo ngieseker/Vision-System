@@ -96,7 +96,7 @@ int main(int, char **)
       cam.setBrightness(0);
       cam.setGain(0);
       cam.setExposure(0);
-      cam.setShutter(100);
+      cam.setShutter(50);
       cam.setWhiteBalance(74, 25);
   
   printf("Displaying: %s(%i) GUID: %016lX Box: %d\n", cams[i].vendor, cams[i].vendor_id, cams[i].guid, boxNum);

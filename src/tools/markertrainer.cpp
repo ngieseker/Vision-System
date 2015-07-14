@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	int shutter = 600;
+	int shutter = 50;
 	if (argc == 2)
 		shutter = atoi(argv[3]);
 
@@ -24,13 +24,14 @@ int main(int argc, char *argv[])
 	Mat hsv;
 	Mat bgr;
 	Mat bin;
-
+   
 	/* initialize windows and trackbars */
 	namedWindow("a", CV_WINDOW_AUTOSIZE);
 	namedWindow("t", 1);
-	int h1m = 0;//84;
-	int s1m = 0;//125;
-	int v1m = 0;//154;
+	//for blue led with BLUE CAM
+	int h1m = 0;//0;
+	int s1m = 0;//91;
+	int v1m = 0;//201;
 	int h1M = 255;//115;
 	int s1M = 255;//255;
 	int v1M = 255;//255;
@@ -42,7 +43,7 @@ int main(int argc, char *argv[])
 	createTrackbar("s1M", "t", &s1M, 255, NULL);
 	createTrackbar("v1M", "t", &v1M, 255, NULL);
 
-#ifdef RGBMARKER
+#ifdef RGBMARKER  	
 	namedWindow("bgrt", 1);
 	int b1m = 0;//84;
 	int g1m = 0;//125;
@@ -60,7 +61,7 @@ int main(int argc, char *argv[])
 #endif
 	/* initialize camera */
 	camera a;
-	if (a.open("NONE", "1024x768_MONO8", 30, "HQLINEAR", "GRBG") < 0)
+	if (a.open("NONE", "640x480_MONO8", 30, "HQLINEAR", "GRBG") < 0)
 		return 0;
 	a.setBrightness(0);
 	a.setGain(0);

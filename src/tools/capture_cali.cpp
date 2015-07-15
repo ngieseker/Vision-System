@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
 	/* Camera initialization */
 	camera cam;
-	if (cam.open("NONE", "1024x768_MONO8", 30, "HQLINEAR", "GRBG") < 0) {
+	if (cam.open("NONE", "640x480_MONO8", 30, "HQLINEAR", "GRBG") < 0) {
 		fprintf(stderr, "Error: Couldn't open camera\n");
 		return 1;
 	}

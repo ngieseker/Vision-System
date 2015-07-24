@@ -12,6 +12,8 @@
 #include <string>
 #include <map>
 #include <cmath>
+#include <lcm/lcm-cpp.hpp>
+#include "crew/report.hpp"
 
 using namespace cam1394;
 using namespace cv;
@@ -118,7 +120,7 @@ int main(int, char **)
       std::vector<Marker> nothing;
       
       key = waitKey(5);
-      
+      lcm::LCM lcm;
       while (key != 'q')
 	{
 	  aimage = cam.read();
@@ -129,11 +131,26 @@ int main(int, char **)
 	  vis.findSingleMarker(nothing);
 	  if (nothing.size())
 	 {
+
+
+			/* Hey kelly this is the code I mentioned */
+
+
 	    Object o(nothing[0], nothing[1], nothing[2], nothing[3], 1);
 	    Marker c = o.get_ctrd();
 	    cout << "POSISTION: " << c.x << " : " << c.y << '\n';
-	    cout << "ORIENTATION: " << o.get_ori() << '\n';
-	    cam.close();
+	    cout << "ORIENTATION: " << o.get_ori() << '\n'; 
+	    crew::report obj_loc;
+	    // obj_loc.name = "/* OBJECT ID */"
+			/* 
+				 my gui requires x/y coordinates here. then matches objects based off relative location
+				 however, after talking with Atkins we should use the object ID to match corresponding object
+				 coordinates. This would just require changing a couple lines of code in my python script
+				 to work with my gui. Then whatever you put here should show up in the gui bar
+			*/
+	    obj_loc.message = "1:2:3";
+	    lcm.publish("EXAMPLE", &obj_loc);
+ 	    cam.close();
 	    exit(0);
 	  }
 
